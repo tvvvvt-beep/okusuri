@@ -10,7 +10,7 @@ export default function Home() {
   const [state, setState] = useState<CaptureState>("INIT");
   const [frontImage, setFrontImage] = useState<string | null>(null);
   const [backImage, setBackImage] = useState<string | null>(null);
-  const [result, setResult] = useState<{ name: string; usage: string } | null>(null);
+  const [result, setResult] = useState<{ name: string; usage: string; dosage?: string } | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -222,8 +222,15 @@ export default function Home() {
               <div className={styles.resultContent}>
                 <h2 className={styles.drugName}>{result.name}</h2>
                 <div className={styles.drugUsage}>
+                  <div className={styles.usageLabel}>用途・効能</div>
                   <p>{result.usage}</p>
                 </div>
+                {result.dosage && (
+                  <div className={styles.drugUsage}>
+                    <div className={styles.usageLabel}>飲み方の目安</div>
+                    <p className={styles.dosageText}>{result.dosage}</p>
+                  </div>
+                )}
               </div>
               <button onClick={resetAll} className={styles.resetButton}>
                 別の薬を判定する

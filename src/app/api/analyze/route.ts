@@ -4,32 +4,36 @@ import { GoogleGenAI } from "@google/genai";
 export async function POST(req: NextRequest) {
     try {
         const formData = await req.formData();
-        const imageFile = formData.get("image") as File;
+        const imageFront = formData.get("imageFront") as File | null;
+        const imageBack = formData.get("imageBack") as File | null;
 
-        if (!imageFile) {
+        if (!imageFront || !imageBack) {
             return NextResponse.json(
-                { error: "画像がアップロードされていません。" },
+                { error: "表面と裏面の両方の画像が必要です。" },
                 { status: 400 }
             );
         }
 
-        // Convert File to Base64
-        const buffer = await imageFile.arrayBuffer();
-        const base64Data = Buffer.from(buffer).toString("base64");
+        // Convert Files to Base64
+        const bufferFront = await imageFront.arrayBuffer();
+        const base64Front = Buffer.from(bufferFront).toString("base64");
 
-        // Initialize Gemini SDK
-        // Assumes process.env.GEMINI_API_KEY is set
+        const bufferBack = await imageBack.arrayBuffer();
+        const base64Back = Buffer.from(bufferBack).toString("base64");
+
         const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
         const prompt = `
-あなたはプロの薬剤師アシスタントです。提供された薬（PTP包装シート、錠剤、パッケージなど）の画像を詳細に分析してください。
+あなたはプロの薬剤師アシスタントです。提供された薬の「表面」と「裏面」の２枚の画像を詳細に分析してください。
+一方には薬品名や成分、もう一方にはジェネリックメーカー名（例：「SANIK」「サワイ」「トーワ」など）や「配合錠」、用量の記載がある場合が多いため、**両方の画像の情報を統合して**判断してください。
+
 画像内のすべての文字（カタカナ、漢字、アルファベット、数字）を注意深く読み取り、正確な「薬品名」と、その薬の「一般的な用途・効能」を特定してください。
-特に、ジェネリック医薬品のメーカー名（例：「SANIK」「サワイ」「トーワ」など）や「配合錠」などの表記も見逃さず、読み取れた最も正確なフルネームを \`name\` に記載してください。
+読み取れた最も正確なフルネームを \`name\` に記載してください。
 
 必ず以下のJSON形式でのみ出力してください。マークダウンの\`\`\`json\`\`\`などの修飾は絶対に含めないでください。
 
 {
-  "name": "（薬の正確なフルネーム。メーカー名や「配合錠」などの記載があればそれも含む）",
+  "name": "（薬の正確なフルネーム。メーカー名や「配合錠」などの記載が見つかればそれも含む）",
   "usage": "（どんな症状の時に飲む薬か、誰にでもわかる簡潔な説明）"
 }
 `;
@@ -43,8 +47,14 @@ export async function POST(req: NextRequest) {
                         { text: prompt },
                         {
                             inlineData: {
-                                data: base64Data,
-                                mimeType: imageFile.type,
+                                data: base64Front,
+                                mimeType: imageFront.type,
+                            }
+                        },
+                        {
+                            inlineData: {
+                                data: base64Back,
+                                mimeType: imageBack.type,
                             }
                         }
                     ]

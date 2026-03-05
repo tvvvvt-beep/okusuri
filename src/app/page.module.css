@@ -30,7 +30,6 @@
     font-size: 0.95rem;
 }
 
-/* Dark mode subtitle adjustment */
 @media (prefers-color-scheme: dark) {
     .subtitle {
         color: #94a3b8;
@@ -42,133 +41,161 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2rem;
+    gap: 1.5rem;
 }
 
-.uploadSection {
+/* Video / Camera Section */
+.cameraSection {
     width: 100%;
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    animation: slideUp 0.3s ease-out;
 }
 
-.uploadCard {
-    background: var(--surface);
-    border-radius: var(--border-radius);
-    padding: 2.5rem 1.5rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1.5rem;
-    border: 2px dashed var(--border);
-    box-shadow: var(--shadow);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: pointer;
+.videoContainer {
+    width: 100%;
     position: relative;
-    overflow: hidden;
-}
-
-.uploadCard:hover,
-.uploadCard:active {
-    border-color: var(--primary);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-}
-
-.cameraIcon {
-    width: 64px;
-    height: 64px;
-    color: var(--primary);
-    background: rgba(59, 130, 246, 0.1);
-    border-radius: 50%;
-    padding: 1rem;
-    transition: transform 0.3s ease;
-}
-
-.uploadCard:hover .cameraIcon {
-    transform: scale(1.1);
-}
-
-.uploadText {
-    font-size: 1.125rem;
-    font-weight: 600;
-    text-align: center;
-}
-
-.uploadSubtext {
-    font-size: 0.875rem;
-    color: #64748b;
-    text-align: center;
-    margin-top: 0.25rem;
-}
-
-.fileInput {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
-}
-
-/* Result Section Styles */
-.resultSection {
-    width: 100%;
-    animation: slideUp 0.5s ease-out forwards;
-}
-
-.resultCard {
-    background: var(--surface);
     border-radius: var(--border-radius);
-    padding: 1.5rem;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border);
-}
-
-.previewImageContainer {
-    width: 100%;
-    height: 200px;
-    border-radius: calc(var(--border-radius) - 0.5rem);
     overflow: hidden;
-    margin-bottom: 1.5rem;
-    position: relative;
-    background: #f1f5f9;
+    background: #000;
+    aspect-ratio: 3/4;
+    box-shadow: var(--shadow);
 }
 
-@media (prefers-color-scheme: dark) {
-    .previewImageContainer {
-        background: #0f172a;
-    }
-}
-
-.previewImage {
+.videoElement {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.resultContent {
+.cameraGuideOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    border: 3px solid rgba(255, 255, 255, 0.4);
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cameraGuideOverlay::after {
+    content: '';
+    position: absolute;
+    width: 80%;
+    height: 60%;
+    border: 2px dashed rgba(255, 255, 255, 0.7);
+    border-radius: 12px;
+}
+
+.cameraControls {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 1rem;
 }
 
-.drugName {
-    font-size: 1.5rem;
-    font-weight: 700;
+.captureInfo {
+    font-weight: 600;
     color: var(--primary);
-    border-bottom: 2px solid var(--border);
-    padding-bottom: 0.5rem;
+    font-size: 1.1rem;
+    background: var(--surface);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.drugUsage {
-    font-size: 1rem;
-    line-height: 1.6;
+.captureButton {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 4px solid white;
+    box-shadow: 0 0 0 2px var(--primary), var(--shadow);
+    cursor: pointer;
+    transition: transform 0.1s;
 }
 
-/* Loading State */
+.captureButton:active {
+    transform: scale(0.9);
+}
+
+.switchCameraButton {
+    background: var(--surface);
+    color: var(--foreground);
+    border: 1px solid var(--border);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+/* Captures Preview */
+.capturesPreview {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.captureThumb {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid var(--border);
+    position: relative;
+    background: var(--surface);
+}
+
+.captureThumb.active {
+    border-color: var(--primary);
+}
+
+.captureThumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.captureLabel {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    font-size: 0.7rem;
+    text-align: center;
+    padding: 2px 0;
+}
+
+/* Start Button (fallback or init) */
+.startButton {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 1.2rem 2rem;
+    border-radius: var(--border-radius);
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.startButton:hover {
+    background: var(--primary-hover);
+}
+
+/* Loading & Result (reuse from before but optimized) */
 .loadingSection {
     display: flex;
     flex-direction: column;
@@ -194,8 +221,40 @@
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+.resultSection {
+    width: 100%;
+    animation: slideUp 0.5s ease-out forwards;
+}
+
+.resultCard {
+    background: var(--surface);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+}
+
+.resultContent {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.drugName {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 0.5rem;
+}
+
+.drugUsage {
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
 .resetButton {
-    margin-top: 1rem;
+    margin-top: 1.5rem;
     width: 100%;
     padding: 1rem;
     background: var(--primary);
@@ -205,14 +264,8 @@
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s;
 }
 
-.resetButton:hover {
-    background: var(--primary-hover);
-}
-
-/* Animations */
 @keyframes spin {
     to {
         transform: rotate(360deg);
